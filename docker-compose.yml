@@ -1,0 +1,27 @@
+services:
+  sensu:
+    image: hiroakis/docker-sensu-server
+    volumes:
+    - "/chiru_pawan/conf.d/:/etc/sensu/conf.d/:ro"
+    - "/chiru_pawan/config.json:/etc/sensu/config.json:ro"
+    command: "git clone https://github.com/shreesri/sensu && cp /sensu/* /etc/sensu/conf.d"
+    entrypoint: /bin/bash
+    command:
+      "
+       # **************** Change Variables Here ************
+       startdirectory="/etc/sensu/conf.d"
+       searchterm="Hostname"
+       replaceterm="172.16.1.26"
+       # **********************************************************
+       echo "***************************************************"
+       echo "* Search and Replace in Files Version 19-Jan-2018 *"
+       echo "***************************************************"
+       i=0;
+         for files in $(ls -l $startdirectory | awk '{print $9}'| grep -l -R $searchterm)
+           do
+              sed -i -e 's/'$searchterm'/'$replaceterm'/g' $files
+           let i++;
+             echo "Modified: " $file
+           done
+       echo " *** All Done! *** Modified files:" $i
+       "
